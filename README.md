@@ -32,7 +32,7 @@
 
 ### 实施计划：
 
-#### 基础框架搭建
+#### 阶段一：BLIP2 + InternLM2，实现图片VQA
 
 目前大部分QFormer变体的模型，都是从[LAVIS](https://github.com/salesforce/LAVIS/tree/main)修改而来，LAVIS的代码质量比较高，可以从这个代码库开始搭建基础框架。
 
@@ -43,7 +43,7 @@
 - [ ] 在BLIP2训练中加入IKEA Assembly数据集；
 - [ ] 评估模型效果。
 
-#### 改造TimeChat
+#### 阶段二：TimeChat + InterLM2，实现短视频的DenseCaptioning和VQA
 
 在掌握BLIP2之后，开始改造TimeChat。
 
@@ -53,6 +53,6 @@
 - [ ] 实现Dense Captioning Demo；
 - [ ] 实现VQA Demo；
 
-#### 自定义Pipeline
+#### 阶段三：实现长视频的Video Grounding
 
 TBD
