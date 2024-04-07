@@ -26,9 +26,33 @@
 
 ![image](https://github.com/tongda/CraftBuddy/assets/653425/98586b18-f117-42aa-bab6-b806a5132371)
 
+* HawkEye([paper](https://arxiv.org/pdf/2403.10228.pdf), [code](https://github.com/yellow-binary-tree/HawkEye))：一个基于QFormer的Video Grounding（在视频中准确定位文本描述的片段起止时间的任务）模型，有点像在视频上做二分查找，先粗粒度判断目标事件发生在视频的哪一段，然后递归分析对应的片段直到整个片段都是目标事件结束。
+
+* InternVL([paper](https://arxiv.org/pdf/2312.14238.pdf), [code](https://github.com/OpenGVLab/InternVL))：更大的BLIP2，包括更大的ViT作为视频编码器，QFormer改成了QLLaMa，从32个learnable query增加到96个，模型参数量更大，等等。
+
 ### 实施计划：
 
-1. 先做一个练手的项目：基于InternLM2复现一个BLIP2模型，熟悉一下Vision Encoder, QFormer等VLM模型常用的组件，以及VLM模型的评估方法，数据集格式等；
-2. 构建数据集：参考TimeChat中使用的TimeIT数据集，将宜家组装数据集构建成TimeIT格式；
-3. 开发Pipeline：TBD
-4. 模型训练：TBD
+#### 基础框架搭建
+
+目前大部分QFormer变体的模型，都是从[LAVIS](https://github.com/salesforce/LAVIS/tree/main)修改而来，LAVIS的代码质量比较高，可以从这个代码库开始搭建基础框架。
+
+- [x] 使用BLIP2官方代码库，完整跑通BLIP2模型推理；
+- [ ] 使用BLIP2官方代码库，在本地环境跑通模型训练，使用coco和VG数据集；
+- [ ] 修改BLIP2代码，把LLM模型换成InternLM2-1.8B，重新训练；
+- [ ] 按照ImageTextDataset形式构建IKEA Assembly数据集；
+- [ ] 在BLIP2训练中加入IKEA Assembly数据集；
+- [ ] 评估模型效果。
+
+#### 改造TimeChat
+
+在掌握BLIP2之后，开始改造TimeChat。
+
+- [x] 跑通TimeChat推理；
+- [ ] 参考TimeIT数据集，构造IKEA Assembly数据集；
+- [ ] 使用InternLM2-1.8B模型替换LLM；
+- [ ] 实现Dense Captioning Demo；
+- [ ] 实现VQA Demo；
+
+#### 自定义Pipeline
+
+TBD
