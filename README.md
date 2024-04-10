@@ -38,7 +38,7 @@
 
 - [x] 使用BLIP2官方代码库，完整跑通BLIP2模型推理；
 - [x] 使用BLIP2官方代码库，在本地环境跑通模型训练，使用coco和~~VG数据集~~(vg数据集加载的目录结构和BLIP2的DataLoader需要的不一样，暂时先不管了）；
-- [x] 修改BLIP2代码，把LLM模型换成InternLM2-1.8B，重新训练；
+- [x] 修改BLIP2代码，把LLM模型换成InternLM2-1.8B，重新训练（[文档记录](docs/InternBLIP2.md)）；
 - [ ] 按照ImageTextDataset形式构建IKEA Assembly数据集；
 - [ ] 在BLIP2训练中加入IKEA Assembly数据集；
 - [ ] 评估模型效果。
