@@ -196,4 +196,6 @@ Pretrain_stage2 log:
 
 ### 动手改模型
 
-我们的目标是基于LAVIS中的BLIP2模型，替换其中的LLM模型，重新微调一个新的模型出来。根据LAVIS的[教程](https://opensource.salesforce.com/LAVIS//latest/tutorial.models.html)，要添加新的模型，在各种框架里面，MMLab的框架解耦做的最好，它把runner和config部分提取出来做成一个独立的库，MMEngine，不同模型开发只需要引入这个比较轻量的库就可以，不需要
+我们的目标是基于LAVIS中的BLIP2模型，替换其中的LLM模型，重新微调一个新的模型出来。根据LAVIS的[教程](https://opensource.salesforce.com/LAVIS//latest/tutorial.models.html)，要添加新的模型，需要引入完整的LAVIS库，然后继承它的`BaseMode`添加新的模型。这种扩展方式的主要问题在于，代码库里耦合了很多其他模型的代码，可能带来一些未知问题，调试的时候这些无关代码也容易产生干扰。在各种框架里面，MMLab的框架解耦做的最好，它把runner和config部分提取出来做成一个独立的库，MMEngine，不同模型开发只需要引入这个比较轻量的库就可以。
+
+
