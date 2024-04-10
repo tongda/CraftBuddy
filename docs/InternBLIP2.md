@@ -198,4 +198,22 @@ Pretrain_stage2 log:
 
 我们的目标是基于LAVIS中的BLIP2模型，替换其中的LLM模型，重新微调一个新的模型出来。根据LAVIS的[教程](https://opensource.salesforce.com/LAVIS//latest/tutorial.models.html)，要添加新的模型，需要引入完整的LAVIS库，然后继承它的`BaseMode`添加新的模型。这种扩展方式的主要问题在于，代码库里耦合了很多其他模型的代码，可能带来一些未知问题，调试的时候这些无关代码也容易产生干扰。在各种框架里面，MMLab的框架解耦做的最好，它把runner和config部分提取出来做成一个独立的库，MMEngine，不同模型开发只需要引入这个比较轻量的库就可以。
 
+首先，看一下blip2_models目录下各个文件的调用关系。
 
+![文件调用关系](../assets/lavis_models_blip2_models.svg)
+
+从图中可以看的出来，BLIP2算法的基础在于`Qformer`，基于`QFormer`构建了`blip2`核心模型，其他模型都是从这个核心模型衍生出来的。单看这个模型的模块化设计，非常简洁清晰，同时也很方便我们就这个框架去扩展。注意看，第三排最左边的，就是我添加的`blip2_internlm`模型。
+
+这个模型是从`blip2_opt`改写过来，因为`InternLM2`模型基本还是遵循LLaMa架构，和`OPT`师出同门，所以几乎可以平替。
+
+贴几个关键修改：
+
+![alt text](../assets/code_diff_1.png)
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
