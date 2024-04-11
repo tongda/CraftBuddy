@@ -24,16 +24,7 @@ LAVIS的关键模块如下图所示：
 .
 ├── app
 │   ├── calculate_coco_features.py
-│   ├── caption.py
-│   ├── classification.py
-│   ├── dataset_browser.py
-│   ├── image_text_match.py
-│   ├── __init__.py
-│   ├── main.py
-│   ├── multimodal_search.py
-│   ├── multipage.py
-│   ├── text_localization.py
-│   ├── utils.py
+...
 │   └── vqa.py
 ├── assets
 │   └── demo-6.png
@@ -41,55 +32,16 @@ LAVIS的关键模块如下图所示：
 ├── CODEOWNERS
 ├── dataset_card
 │   ├── avsd_dialogue.md
-│   ├── coco_caption.md
-│   ├── coco_retrieval.md
-│   ├── conceptual_captions.md
-│   ├── didemo_retrieval.md
-│   ├── flickr_retrieval.md
-│   ├── gqa.md
-│   ├── imgs
-│   ├── msrvtt_qa.md
-│   ├── msrvtt_retrieval.md
-│   ├── msvd_qa.md
-│   ├── nlvr2.md
-│   ├── nocaps.md
-│   ├── sbu_caption.md
-│   ├── snli_visual_entailment.md
+...
 │   └── vqav2.md
 ├── docs
 │   ├── benchmark.rst
-│   ├── build_docs.sh
-│   ├── conf.py
-│   ├── getting_started.rst
-│   ├── index.rst
-│   ├── intro.rst
-│   ├── make.bat
-│   ├── Makefile
-│   ├── requirements.txt
-│   ├── _static
-│   ├── tutorial.configs.rst
-│   ├── tutorial.datasets.rst
-│   ├── tutorial.evaluation.rst
-│   ├── tutorial.models.rst
-│   ├── tutorial.processors.rst
-│   ├── tutorial.rst
-│   ├── tutorial.tasks.rst
+...
 │   └── tutorial.training-example.rst
 ├── evaluate.py
 ├── examples
 │   ├── albef_feature_extraction.ipynb
-│   ├── albef_vqa.ipynb
-│   ├── albef_zero_shot_classification.ipynb
-│   ├── blip2_feature_extraction.ipynb
-│   ├── blip2_image_text_matching.ipynb
-│   ├── blip2_instructed_generation.ipynb
-│   ├── blip_feature_extraction.ipynb
-│   ├── blip_image_captioning.ipynb
-│   ├── blip_image_text_matching.ipynb
-│   ├── blip_text_localization.ipynb
-│   ├── blip_vqa.ipynb
-│   ├── blip_zero_shot_classification.ipynb
-│   ├── clip_feature_extraction.ipynb
+...
 │   └── clip_zero_shot_classification.ipynb
 ├── lavis                    # lavis的主要目录
 │   ├── common
@@ -107,33 +59,16 @@ LAVIS的关键模块如下图所示：
 ├── MANIFEST.in
 ├── projects                 # 这个项目目录其实是项目文档目录，基本上就是README
 │   ├── blip2
-│   ├── blip-diffusion
-│   ├── img2llm-vqa
-│   ├── img2prompt-vqa
-│   ├── instructblip
-│   ├── pnp-vqa
-│   └── xinstructblip
+...
 ├── pyproject.toml
 ├── README.md
 ├── requirements.txt
 ├── run_scripts              # 这里面是各个项目的执行脚本
-│   ├── albef
-│   ├── alpro
-│   ├── blip
+...
 │   ├── blip2
-│   ├── blip-diffusion
-│   ├── clip
-│   ├── gpt
-│   ├── pnp-vqa
-│   ├── run_browser.sh
-│   └── run_demo.sh
+...
 ├── salesforce_lavis.egg-info
-│   ├── dependency_links.txt
-│   ├── not-zip-safe
-│   ├── PKG-INFO
-│   ├── requires.txt
-│   ├── SOURCES.txt
-│   └── top_level.txt
+...
 ├── SECURITY.md
 ├── setup.py
 ├── tests
