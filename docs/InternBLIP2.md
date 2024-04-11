@@ -206,14 +206,72 @@ Pretrain_stage2 log:
 
 这个模型是从`blip2_opt`改写过来，因为`InternLM2`模型基本还是遵循LLaMa架构，和`OPT`师出同门，所以几乎可以平替。
 
-贴几个关键修改：
+`blip2_opt.py:85`:
 
-![alt text](../assets/code_diff_1.png)
+```
+        self.opt_tokenizer = AutoTokenizer.from_pretrained(opt_model, use_fast=False)
+        self.opt_model = OPTForCausalLM.from_pretrained(
+            opt_model, torch_dtype=torch.float16
+        )
+```
 
-![alt text](image.png)
+改为`blip2_internlm.py:82`:
 
-![alt text](image-1.png)
+```
+        self.internlm_tokenizer = AutoTokenizer.from_pretrained(internlm_model, use_fast=False, trust_remote_code=True)
+        self.internlm_model = AutoModelForCausalLM.from_pretrained(
+            internlm_model, torch_dtype=torch.float16, trust_remote_code=True
+        )
+```
 
-![alt text](image-2.png)
+需要注意，这里用了`AutoModelForCausalLM`类自动加载模型架构，所以用的是internlm2的huggingface仓库。InternLM的官方GitHub仓库里没找到InternLM2的模型定义文件。
 
-![alt text](image-3.png)
+InternLM2模型接口和OPT模型接口几乎一样，所以大部分代码只需要把`opt_xxx`替换成`internlm_xxx`就可以了。除了一个地方：
+
+`blip2_opt.py:149`:
+
+```
+        inputs_embeds = self.opt_model.model.decoder.embed_tokens(opt_tokens.input_ids)
+```
+
+这里对应的InternLM代码是：
+
+```
+        inputs_embeds = self.internlm_model.model.tok_embeddings(internlm_tokens.input_ids)
+```
+
+至此，改造完成，跑起来看看吧。
+
+### 训练结果
+
+这里主要跑的是二阶段训练，贴一下训练日志：
+
+```
+{"train_lr": "0.000", "train_loss": "2.530"}
+{"train_lr": "0.000", "train_loss": "2.240"}
+{"train_lr": "0.000", "train_loss": "2.181"}
+{"train_lr": "0.000", "train_loss": "2.135"}
+{"train_lr": "0.000", "train_loss": "2.095"}
+{"train_lr": "0.000", "train_loss": "2.058"}
+{"train_lr": "0.000", "train_loss": "2.022"}
+{"train_lr": "0.000", "train_loss": "1.988"}
+{"train_lr": "0.000", "train_loss": "1.959"}
+{"train_lr": "0.000", "train_loss": "1.938"}
+```
+
+对比一下用OPT模型的二阶段训练日志：
+
+```
+{"train_lr": "0.000", "train_loss": "2.109"}
+{"train_lr": "0.000", "train_loss": "1.826"}
+{"train_lr": "0.000", "train_loss": "1.773"}
+{"train_lr": "0.000", "train_loss": "1.738"}
+{"train_lr": "0.000", "train_loss": "1.709"}
+{"train_lr": "0.000", "train_loss": "1.685"}
+{"train_lr": "0.000", "train_loss": "1.659"}
+{"train_lr": "0.000", "train_loss": "1.634"}
+{"train_lr": "0.000", "train_loss": "1.615"}
+{"train_lr": "0.000", "train_loss": "1.601"}
+```
+
+OPT模型的loss明显要低一些，这个也可以理解，毕竟InternLM2我们用的是1.8B的权重，等我有了A100，再试试7B的效果。
