@@ -48,10 +48,14 @@
 在掌握BLIP2之后，开始改造TimeChat。
 
 - [x] 跑通TimeChat推理；
-- [ ] 参考TimeIT数据集，构造IKEA Assembly数据集；
+- [x] 参考TimeIT数据集，构造IKEA Assembly数据集；
 - [ ] 使用InternLM2-1.8B模型替换LLM；
-- [ ] 实现Dense Captioning Demo；
+- [x] 实现Dense Captioning Demo；
 - [ ] 实现VQA Demo；
+
+##### 阶段性Demo
+
+![alt text](assets/image.png)
 
 #### 阶段三：实现长视频的Video Grounding
 
