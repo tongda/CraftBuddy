@@ -1,3 +1,4 @@
 ckpt/
 **/*.egg-info/
 **/__pycache__/
+*.pt

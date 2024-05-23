@@ -123,7 +123,7 @@ class PreTrainViT(nn.Module):
         self.vit.apply(convert_weights)
 
     @classmethod
-    def from_blip2_vit_ckpt(cls, ckpt_path):
+    def from_blip2_vit_ckpt(cls, ckpt: str | dict):
         model = cls(
             num_hidden_layers=39,
             hidden_size=1408,
@@ -135,7 +135,10 @@ class PreTrainViT(nn.Module):
             layer_norm_eps=1e-06,
         )
 
-        state_dict = torch.load(ckpt_path)
+        if isinstance(ckpt, str):
+            state_dict = torch.load(ckpt, map_location="cpu")
+        else:
+            state_dict = ckpt
         state_dict = _convert_blip2_state_dict(state_dict)
         model.vit.load_state_dict(state_dict)
         return model
