@@ -24,6 +24,7 @@ def disabled_train(self, mode=True):
 vit = PreTrainViT.from_blip2_vit_ckpt("ckpt/eva-vit-g/eva_vit_g.pth")
 vit = vit.to("cuda:0")
 blip2_ckpt = torch.load("ckpt/instruct-blip/instruct_blip_vicuna7b_trimmed.pth", map_location="cpu")['model']
+timechat_ckpt = torch.load("ckpt/timechat/timechat_7b.pth", map_location="cpu")['model']
 vit.update_output_layernorm(blip2_ckpt["ln_vision.weight"], blip2_ckpt["ln_vision.bias"])
 vit.to_precision(torch.float16)
 for name, param in vit.named_parameters():
@@ -60,7 +61,7 @@ with torch.cuda.amp.autocast(dtype=torch.float16):
     frame_embeds = frame_qformer(img_embs, instructions).last_hidden_state
     print(frame_embeds)
 
-    video_qformer = VideoQFormer(max_frame_pos=96, vision_width=frame_qformer.hidden_size)
+    video_qformer = VideoQFormer.from_timechat(timechat_ckpt)
     print(video_qformer(frame_embeds))
 
 # tokenizer = transformers.BertTokenizer.from_pretrained("bert-base-uncased")
