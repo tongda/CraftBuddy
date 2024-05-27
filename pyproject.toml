@@ -20,6 +20,8 @@ dependencies = [
     "gradio",
     "decord",
     "einops",
+    "peft",
+    "sentencepiece",
 ]
 
 [project.optional-dependencies]

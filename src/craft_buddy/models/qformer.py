@@ -97,8 +97,8 @@ class QFormer(nn.Module):
             return result
 
     @classmethod
-    def from_blip2_ckpt(cls, ckpt: str | dict):
-        model = cls()
+    def from_blip2_ckpt(cls, ckpt: str | dict, device: str = "cuda:0"):
+        model = cls(device=device)
         if isinstance(ckpt, str):
             state_dict = torch.load(ckpt, map_location="cpu")["model"]
         else:
