@@ -47,7 +47,7 @@ class VideoQFormer(nn.Module):
         self.window_size = window_size
         self.window_stride = window_stride
 
-    def forward(self, frame_embeds):
+    def forward(self, frame_embeds, debug: str = ""):
         frame_num = frame_embeds.shape[0]
 
         position_ids = torch.arange(0, frame_num).cuda(0)
@@ -69,7 +69,7 @@ class VideoQFormer(nn.Module):
             )  # 原本输入只是一段视频抽帧后的token，增加batch维度
             clip_embeds = einops.rearrange(clip_embeds, "b t q h -> b (t q) h")
             # clip_atts = torch.ones(1, clip_embeds.shape[1], clip_embeds.shape[1]).cuda(0)
-            clip_hidden_state = self.qformer(image_embeds=clip_embeds).last_hidden_state
+            clip_hidden_state = self.qformer(image_embeds=clip_embeds, debug=debug).last_hidden_state
             clip_hidden_state_list.append(clip_hidden_state)
 
         video_hidden_state = torch.cat(clip_hidden_state_list, dim=1)

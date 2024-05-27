@@ -71,6 +71,7 @@ class QFormer(nn.Module):
         self,
         image_embeds,
         instructions=None,
+        debug: str = "",
     ):
         with torch.cuda.amp.autocast():
             if instructions is not None:
@@ -82,11 +83,18 @@ class QFormer(nn.Module):
             else:
                 instruction_ids = None
             query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
-            return self.qformer(
+            result = self.qformer(
                 instruction_ids,
                 query_embeds=query_tokens,
                 encoder_hidden_states=image_embeds,
+                output_hidden_states=True if debug else False,
+                output_attentions=True if debug else False,
             )
+            
+            if debug:
+                torch.save(result, debug)
+            
+            return result
 
     @classmethod
     def from_blip2_ckpt(cls, ckpt: str | dict):

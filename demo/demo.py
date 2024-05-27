@@ -1,7 +1,4 @@
-from transformers import BertConfig, BertLMHeadModel, Blip2QFormerConfig, Blip2QFormerModel, InstructBlipQFormerConfig, InstructBlipQFormerModel
-
 import torch
-import torch.nn as nn
 from craft_buddy.models.qformer import QFormer
 from craft_buddy.models.vit import PreTrainViT
 
@@ -9,8 +6,6 @@ import decord
 import einops
 import numpy as np
 import torchvision.transforms.functional as F
-
-import transformers
 
 from craft_buddy.models.vqformer import VideoQFormer
 
@@ -51,38 +46,16 @@ mean = (0.48145466, 0.4578275, 0.40821073)
 std = (0.26862954, 0.26130258, 0.27577711)
 images = F.normalize(images, mean, std).cuda(0)
 
-frame_qformer = QFormer.from_blip2_ckpt(blip2_ckpt)
+frame_qformer = QFormer.from_blip2_ckpt(timechat_ckpt)
+
+# frame_qformer.query_tokens.data.copy_(timechat_ckpt["query_tokens"])
 with torch.cuda.amp.autocast(dtype=torch.float16):
     img_embs = vit(images).last_hidden_state
-    torch.save(images, "img_embs_1.pt")
-    print(images[:, :, 100, 100])
-    print("img_embs", img_embs)
-    instructions = [f"This frame is sampled at {i / vr.get_avg_fps():.1f} seconds." for i in indices]
+    instructions = [f"This frame is sampled at {i / vr.get_avg_fps():.1f} second." for i in indices]
     frame_embeds = frame_qformer(img_embs, instructions).last_hidden_state
     print(frame_embeds)
 
     video_qformer = VideoQFormer.from_timechat(timechat_ckpt)
-    print(video_qformer(frame_embeds))
-
-# tokenizer = transformers.BertTokenizer.from_pretrained("bert-base-uncased")
-
-# blip2_qformer = Blip2QFormerModel(Blip2QFormerConfig()).to("cuda:0")
-# query_tokens = nn.Parameter(torch.zeros(1, 32, blip2_qformer.config.hidden_size))
-# query_tokens = query_tokens.expand(img_embs.shape[0], -1, -1).to("cuda:0")
-
-# instructblip_qformer = InstructBlipQFormerModel(InstructBlipQFormerConfig()).to("cuda:0")
-
-# input_ids = tokenizer("test, test, test.", return_tensors="pt")
-# embs = instructblip_qformer.embeddings(input_ids["input_ids"], query_embeds=query_tokens).to("cuda:0")
-
-# print(instructblip_qformer(input_ids["input_ids"].to("cuda:0"), query_embeds=query_tokens, encoder_hidden_states=img_embs.to("cuda:0")))
-
-# mask = torch.cat(
-#     [
-#         torch.ones(query_tokens.shape[:-1], dtype=torch.long).to("cuda:0"), 
-#         input_ids["attention_mask"].to("cuda:0")
-#     ], dim=-1)
-
-# with torch.cuda.amp.autocast():
-#     out = blip2_qformer(embs, mask, encoder_hidden_states=img_embs, query_length=query_tokens.shape[1])
-# print(out)
+    video_token = video_qformer(frame_embeds)
+    
+    print(video_token)
