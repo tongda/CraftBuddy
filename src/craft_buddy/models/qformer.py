@@ -105,6 +105,6 @@ class QFormer(nn.Module):
             state_dict = ckpt
         conv_state_dict = _convert_blip2_state_dict(state_dict)
         keys = model.load_state_dict(conv_state_dict, strict=False)
-        print("Load from blip2 pretrained weights", keys)
+        print("Load from blip2 pretrained weights", keys.missing_keys)
         model = model.to(model.device)
         return model

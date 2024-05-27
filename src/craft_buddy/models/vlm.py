@@ -2,10 +2,26 @@ import einops
 import torch
 import torch.nn as nn
 import torchvision.transforms.functional as F
+from transformers import StoppingCriteria, StoppingCriteriaList
+
 from craft_buddy.models.llm import LLM
 from craft_buddy.models.qformer import QFormer
 from craft_buddy.models.vit import PreTrainViT
 from craft_buddy.models.vqformer import VideoQFormer
+
+
+class StoppingCriteriaSub(StoppingCriteria):
+
+    def __init__(self, stops=[], encounters=1):
+        super().__init__()
+        self.stops = stops
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor):
+        for stop in self.stops:
+            if torch.all((stop == input_ids[0][-len(stop):])).item():
+                return True
+
+        return False
 
 
 class DisVLM():
@@ -39,7 +55,7 @@ class DisVLM():
         llm_proj.bias.data.copy_(timechat_ckpt["llama_proj.bias"])
         return llm_proj
     
-    def encode_video(self, video: torch.Tensor, indices: list[int], fps: float):
+    def encode_video(self, images: torch.Tensor, indices: list[int], fps: float):
         images = images.float() # 不需要unsqueeze，因为在timechat的原始实现里，并不是batch处理，而是对于每一段视频，单独处理，所以已经没有batch维度，只有time维度
         images = einops.rearrange(images, "t h w c ->  t c h w")
         images = images / 255.0
@@ -50,8 +66,26 @@ class DisVLM():
         img_embs = self.vit(images).last_hidden_state
         instructions = [f"This frame is sampled at {i / fps:.1f} second." for i in indices]
         frame_embeds = self.frame_qformer(img_embs, instructions).last_hidden_state
-        print(frame_embeds)
 
         video_token = self.video_qformer(frame_embeds)
-        print(video_token)
+        return video_token
         
+    def generate(self, video_token, prompt, max_new_tokens, num_beams, top_p, repetition_penalty, length_penalty, temperature):
+        proj_token = self.llm_proj(video_token)
+        
+        stop_words_ids = [torch.tensor([2]).to(self.llm.device)]
+        stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
+        
+        output = self.llm(
+            proj_token,
+            prompt,
+            max_new_tokens=max_new_tokens,
+            stopping_criteria=stopping_criteria,
+            num_beams=num_beams,
+            min_length=1,
+            top_p=top_p,
+            repetition_penalty=repetition_penalty,
+            length_penalty=length_penalty,
+            temperature=temperature,
+        )
+        return output
