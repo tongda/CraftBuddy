@@ -65,6 +65,7 @@ class LLM(nn.Module):
             repetition_penalty=repetition_penalty,
             length_penalty=length_penalty,
             temperature=temperature,
+            low_memory=True,
         )
         
         output_token = outputs[0]
@@ -87,6 +88,14 @@ class LLM(nn.Module):
         llm_load_result = llm.load_state_dict(llm_state_dict, strict=False)
         print("loaded from checkpoint:", llm_load_result.unexpected_keys)
         return llm
+    
+    def update_ckpt(self, ckpt: dict):
+        llm_state_dict = dict()
+        for key, value in ckpt.items():
+            if key.startswith("llama_model"):
+                new_key = key.replace("llama_model.", "llm.")
+                llm_state_dict[new_key] = value
+        self.load_state_dict(llm_state_dict, strict=False)
         
         
         

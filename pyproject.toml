@@ -22,6 +22,7 @@ dependencies = [
     "einops",
     "peft",
     "sentencepiece",
+    "openai",
 ]
 
 [project.optional-dependencies]

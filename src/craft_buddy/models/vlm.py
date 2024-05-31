@@ -55,7 +55,7 @@ class DisVLM():
         llm_proj.bias.data.copy_(timechat_ckpt["llama_proj.bias"])
         return llm_proj
     
-    def encode_video(self, images: torch.Tensor, indices: list[int], fps: float):
+    def encode_video(self, images: torch.Tensor, indices: list[int], fps: float, window_size: int = 32, window_stride: int = 32):
         images = images.float() # 不需要unsqueeze，因为在timechat的原始实现里，并不是batch处理，而是对于每一段视频，单独处理，所以已经没有batch维度，只有time维度
         images = einops.rearrange(images, "t h w c ->  t c h w")
         images = images / 255.0
@@ -67,7 +67,7 @@ class DisVLM():
         instructions = [f"This frame is sampled at {i / fps:.1f} second." for i in indices]
         frame_embeds = self.frame_qformer(img_embs, instructions).last_hidden_state
 
-        video_token = self.video_qformer(frame_embeds)
+        video_token = self.video_qformer(frame_embeds, window_size, window_stride)
         return video_token
         
     def generate(self, video_token, prompt, max_new_tokens, num_beams, top_p, repetition_penalty, length_penalty, temperature):
@@ -89,3 +89,11 @@ class DisVLM():
             temperature=temperature,
         )
         return output
+    
+    def update_ckpt(self, ckpt: str | dict):
+        if isinstance(ckpt, str):
+            ckpt = torch.load(ckpt)['model']
+        self.video_qformer.update_ckpt(ckpt)
+        self.llm.update_ckpt(ckpt)
+        self.llm_proj.weight.data.copy_(ckpt["llama_proj.weight"])
+        self.llm_proj.bias.data.copy_(ckpt["llama_proj.bias"])

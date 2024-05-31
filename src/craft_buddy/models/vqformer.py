@@ -47,7 +47,7 @@ class VideoQFormer(nn.Module):
         self.window_size = window_size
         self.window_stride = window_stride
 
-    def forward(self, frame_embeds, debug: str = ""):
+    def forward(self, frame_embeds, window_size=32, window_sride=32, debug: str = ""):
         frame_num = frame_embeds.shape[0]
 
         position_ids = torch.arange(0, frame_num).cuda(0)
@@ -62,8 +62,8 @@ class VideoQFormer(nn.Module):
         frame_embeds = frame_embeds + frame_position_embeddings
 
         clip_hidden_state_list = []
-        for i in range(0, frame_num, self.window_stride):
-            clip_embeds = frame_embeds[i : i + self.window_size]
+        for i in range(0, frame_num, window_sride):
+            clip_embeds = frame_embeds[i : i + window_size]
             clip_embeds = clip_embeds.unsqueeze(
                 0
             )  # 原本输入只是一段视频抽帧后的token，增加batch维度
@@ -91,3 +91,8 @@ class VideoQFormer(nn.Module):
         msg = model.load_state_dict(conv_state_dict, strict=False)
         print(msg)
         return model
+    
+    def update_ckpt(self, ckpt: dict):
+        conv_state_dict = _convert_timechat_state_dict(ckpt)
+        msg = self.load_state_dict(conv_state_dict, strict=False)
+        print(msg)
