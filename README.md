@@ -1,5 +1,9 @@
 # CraftBuddy / 智心匠，智能组装引导助手
 
+## 演示视频
+
+https://github.com/tongda/CraftBuddy/assets/653425/29952f98-0a61-4f84-906d-63cc7f3e05f2
+
 ## 功能：
 
 1. 视频语义分割：根据教学视频，自动拆解步骤，
