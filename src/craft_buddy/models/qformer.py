@@ -32,6 +32,7 @@ class QFormer(nn.Module):
     ):
         super().__init__()
         self.device = device
+        self.num_query_tokens = num_query_tokens
         self.hidden_size = hidden_size
         self.has_instruction = has_instruction
         with torch.device(self.device):

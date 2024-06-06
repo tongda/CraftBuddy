@@ -42,7 +42,15 @@ class LLM(nn.Module):
         llm.print_trainable_parameters()
         return llm
         
-    def forward(self, video_tokens, text_prompt, max_new_tokens, stopping_criteria, num_beams, min_length, top_p, repetition_penalty, length_penalty, temperature):
+    def forward(self, inputs_embeds, labels, return_dict=True):
+        outputs = self.llm(
+            inputs_embeds=inputs_embeds,
+            labels=labels,
+            return_dict=return_dict
+        )
+        return outputs
+        
+    def generate(self, video_tokens, text_prompt, max_new_tokens, stopping_criteria, num_beams, min_length, top_p, repetition_penalty, length_penalty, temperature):
         prompt_segs = text_prompt.split(DEFAULT_IMAGE_PATCH_TOKEN)
         assert len(prompt_segs) == 2, "视频提示词应该有且只有一个图片占位符"
         
