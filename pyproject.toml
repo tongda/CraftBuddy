@@ -14,7 +14,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-    "torch",
+    "torch<=2.1.0",
     "torchvision",
     "transformers",
     "gradio",
@@ -23,6 +23,7 @@ dependencies = [
     "peft",
     "sentencepiece",
     "openai",
+    "mmengine"
 ]
 
 [project.optional-dependencies]
