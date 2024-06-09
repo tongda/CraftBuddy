@@ -37,7 +37,7 @@ class DisVLM(BaseModel):
         
         self.vit = self._init_vit(vit_ckpt_path, encoder_device, blip2_ckpt)
         self.frame_qformer = QFormer.from_blip2_ckpt(timechat_ckpt, device=encoder_device)
-        self.video_qformer = VideoQFormer.from_timechat(timechat_ckpt, device=encoder_device)
+        self.video_qformer = VideoQFormer.from_timechat(timechat_ckpt, device=llm_device)
         
         if freeze_vit:
             for name, param in self.vit.named_parameters():
@@ -85,6 +85,7 @@ class DisVLM(BaseModel):
             instructions = [f"This frame is sampled at {ts} second." for ts in timestamps]
             frame_embeds = self.frame_qformer(img_embs, instructions).last_hidden_state
 
+            
             video_token = self.video_qformer(frame_embeds, window_size, window_stride)
         elif len(images.shape) == 5:
             # (batch_size, num_frames, 3, H, W)
@@ -94,6 +95,7 @@ class DisVLM(BaseModel):
                 instructions = [f"This frame is sampled at {ts} second." for ts in timestamps[i]]
                 frame_embeds = self.frame_qformer(img_embs, instructions).last_hidden_state
 
+                frame_embeds.to(self.video_qformer.device)
                 video_token_list.append(self.video_qformer(frame_embeds, window_size, window_stride))
             video_token = torch.concat(video_token_list, dim=0)
         return video_token

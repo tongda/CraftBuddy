@@ -27,6 +27,14 @@ def vlm_sample_collate(batch):
     timestamps = [sample["timestamps"] for sample in batch]
     input_ids = [sample["input_ids"] for sample in batch]
     targets = [sample["targets"] for sample in batch]
+
+    # 大于 1 的batch，input_ids 长度可能不一样，需要用 0 填充，注意要左填充，同时 targets 要用 -100 填充
+    if len(batch) > 1:
+        max_len = max([ids.shape[1] for ids in input_ids])
+        for i in range(len(input_ids)):
+            input_ids[i] = torch.nn.functional.pad(input_ids[i], (max_len - input_ids[i].shape[1], 0), value=0)
+            targets[i] = torch.nn.functional.pad(targets[i], (max_len - targets[i].shape[1], 0), value=-100)
+    
     return {
         "frames": torch.stack(frames, dim=0),
         "timestamps": timestamps,
@@ -50,7 +58,7 @@ runner = Runner(
         dataset=dataset,
         shuffle=True,
         collate_fn=vlm_sample_collate,
-        batch_size=1,
+        batch_size=2,
         num_workers=2,
     ),
     train_cfg=dict(

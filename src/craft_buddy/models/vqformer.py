@@ -34,6 +34,7 @@ class VideoQFormer(nn.Module):
         device="cuda:0",
     ):
         super().__init__()
+        self.device = device
         self.video_frame_position_embedding = nn.Embedding(
             max_frame_pos, hidden_size, device=device
         )
